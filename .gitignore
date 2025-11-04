@@ -1,4 +1,4 @@
-# Python build
+# Python build/meta
 dist/
 build/
 *.egg-info/
@@ -10,11 +10,12 @@ __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 
-# Envs & tooling
+# Envs & logs
 .venv/
 .env
 *.log
 
-# OS
+# OS junk
 .DS_Store
 Thumbs.db
+EOF
