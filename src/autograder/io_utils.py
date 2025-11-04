@@ -5,6 +5,7 @@
 import os, re, unicodedata, datetime as dt
 from pathlib import Path
 from typing import Tuple, Dict, Any
+from datetime import datetime, timedelta, timezone
 
 # ---- Time (KST)
 KST = dt.timezone(dt.timedelta(hours=9))
@@ -95,7 +96,7 @@ def load_config(toml_path: str, session: int, env: str) -> Dict[str, Any]:
     block = data[key][env]
     return {
         "template_path": block["TEMPLATE_PATH"],
-        "solution_path": block["SOLUTION_PATH"],
+        "answer_path": block["ANSWER_PATH"],
         "submit_dir":    block["SUBMIT_DIR"],
         "out_dir":       block["OUT_DIR"],
     }

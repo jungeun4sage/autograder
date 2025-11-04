@@ -8,7 +8,7 @@ from autograder.nb_utils import ( LABEL_PATTERN, _normalize_code,_extract_label,
     _label_key_robust
 )
 
-STRICT_REQUIRED_FROM_SOLUTION = True  # 정답에 코드가 있으면 무조건 필수로 태깅
+STRICT_REQUIRED_FROM_ANSWER = True  # 정답에 코드가 있으면 무조건 필수로 태깅
 MIN_CODE_LEN = 5                      # "실코드" 최소 길이 기준
 
 def template_label_tagging(tmpl_path, sol_path, tag_path, audit_path):
@@ -50,7 +50,7 @@ def template_label_tagging(tmpl_path, sol_path, tag_path, audit_path):
             tcell.source or "", re.I | re.M
         ))
 
-        if STRICT_REQUIRED_FROM_SOLUTION and scell and len(scode) >= MIN_CODE_LEN:
+        if STRICT_REQUIRED_FROM_ANSWER and scell and len(scode) >= MIN_CODE_LEN:
             required_labels.add(lab); continue
         if scell and len(scode) >= MIN_CODE_LEN and (tcode != scode):
             required_labels.add(lab); continue
@@ -100,3 +100,25 @@ def template_label_tagging(tmpl_path, sol_path, tag_path, audit_path):
         audit_df.to_csv(audit_path, index=False, encoding="utf-8-sig")
     except Exception as e:
         print("⚠️ tag audit save failed:", e)
+
+
+# tagged file에서 label 분류
+def classify_labels(tagged_temp_path):
+    tagged_nb = nbformat.read(tagged_temp_path, as_version=4)
+
+    req_labels, opt_labels = set(), set()
+    req_idx, opt_idx = set(), set()
+
+    for i, c in enumerate(tagged_nb.cells):
+        if c.cell_type != "code":
+            continue
+        tg = set(c.get("metadata", {}).get("tags", []))
+        lab = _extract_label(c.source or "")
+        if "required" in tg and lab:
+            req_labels.add(lab); req_idx.add(i)
+        if "optional_ex" in tg and lab:
+            opt_labels.add(lab); opt_idx.add(i)
+
+
+    template_fp = _nb_fingerprint(tagged_nb)
+    return req_labels, opt_labels, req_idx, opt_idx, template_fp

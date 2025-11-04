@@ -19,7 +19,7 @@ from autograder.report import build_stats_block, build_excluded_summary_line
 def main(session: int, env: str, toml_path: str):
     cfg = load_config(toml_path, session, env)
     TEMPLATE_PATH = cfg["template_path"]
-    SOLUTION_PATH = cfg["solution_path"]
+    ANSWER_PATH = cfg["answer_path"]
     SUBMIT_DIR    = cfg["submit_dir"]
     OUT_DIR       = cfg["out_dir"]
 
@@ -29,7 +29,7 @@ def main(session: int, env: str, toml_path: str):
     EXEC_DIR.mkdir(parents=True, exist_ok=True)
 
     tmpl = nbformat.read(TEMPLATE_PATH, as_version=4)
-    sol  = nbformat.read(SOLUTION_PATH, as_version=4)
+    sol  = nbformat.read(ANSWER_PATH, as_version=4)
 
     # 태그 읽기 (노트북에서 만든 태깅본 없이 운영하려면 여기에 태깅 로직 추가해도 됨)
     req_labels, opt_labels = set(), set()
