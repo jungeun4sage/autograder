@@ -1,21 +1,29 @@
-# Python build/meta
+# --- Python build/meta
 dist/
 build/
 *.egg-info/
 **/*.egg-info/
 
-# Bytecode & caches
+# --- Virtual env & tools
+.venv/
+.env
+.ruff_cache/
+.pytest_cache/
+
+# --- Bytecode & notebooks
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-.pytest_cache/
 
-# Envs & logs
-.venv/
-.env
-*.log
-
-# OS junk
+# --- OS junk
 .DS_Store
 Thumbs.db
-EOF
+
+# --- Project outputs (생성물은 커밋 금지)
+outputs/**
+executed/**
+autograde_run.log
+
+# --- CSV 결과물은 산출 폴더만 무시 (소스 CSV가 있다면 개별 허용!)
+*.csv
+!configs/**/*.csv  # (필요하면 소스 csv 허용)
