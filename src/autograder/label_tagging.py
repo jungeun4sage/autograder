@@ -121,4 +121,7 @@ def classify_labels(tagged_temp_path):
 
 
     template_fp = _nb_fingerprint(tagged_nb)
-    return req_labels, opt_labels, req_idx, opt_idx, template_fp
+    required_cell_map = _indexes_with_labels(tagged_nb, req_idx)
+    optional_cell_map = _indexes_with_labels(tagged_nb, opt_idx)
+    return req_labels, opt_labels, req_idx, opt_idx,\
+           template_fp,required_cell_map, optional_cell_map
