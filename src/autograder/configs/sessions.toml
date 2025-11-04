@@ -1,0 +1,30 @@
+# 각 세션별 DEV/PROD 경로를 정의하세요.
+
+[session_9]
+  [session_9.DEV]
+
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_09_파이썬 기초_학번_성명.ipynb"
+  SOLUTION_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_09_파이썬 기초_학번_성명_src.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/9차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/Autograde/9차시"
+
+  [session_9.PROD]
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_09_파이썬 기초_학번_성명.ipynb"
+  SOLUTION_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_09_파이썬 기초_학번_성명_src.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/9차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/Autograde/9차시"
+
+[session_10]
+  [session_10.DEV]
+  TEMPLATE_PATH = "/content/drive/MyDrive/DEV/10/template.ipynb"
+  SOLUTION_PATH = "/content/drive/MyDrive/DEV/10/solution.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/DEV/10/submits"
+  OUT_DIR       = "/content/drive/MyDrive/DEV/10/out"
+
+  [session_10.PROD]
+  TEMPLATE_PATH = "/content/drive/MyDrive/PROD/10/template.ipynb"
+  SOLUTION_PATH = "/content/drive/MyDrive/PROD/10/solution.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/PROD/10/submits"
+  OUT_DIR       = "/content/drive/MyDrive/PROD/10/out"
+
+# 11, 12도 같은 형식으로 추가

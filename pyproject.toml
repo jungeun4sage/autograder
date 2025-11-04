@@ -1,0 +1,22 @@
+[project]
+name = "autograder"
+version = "0.1.0"
+description = "Notebook AutoGrader"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "nbformat>=5.10",
+  "nbclient>=0.9",
+  "pandas>=2.2",
+  "jinja2>=3.1",
+  "pyyaml>=6.0",
+]
+
+[project.scripts]
+autograder = "autograder.grader:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
