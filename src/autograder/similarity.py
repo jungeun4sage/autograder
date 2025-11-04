@@ -1,9 +1,15 @@
 # src/autograder/similarity.py
 from __future__ import annotations
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Iterable, Sequence, Dict, List, Tuple, Any
 import pandas as pd
 from autograder.io_utils import _mtime_kst_str, _filesize_bytes
+
+SIM_COLS: List[str] = [
+    "student_a", "name_a", "file_a", "mtime_a_kst", "size_a_bytes",
+    "student_b", "name_b", "file_b", "mtime_b_kst", "size_b_bytes",
+    "similarity",
+]
 
 def compute_similarity_pairs(
     fps: Dict[str, Any],
@@ -50,13 +56,20 @@ def compute_similarity_pairs(
                     f"{sab:.3f}"
                 ])
 
-    df_sim = pd.DataFrame(
-        pairs,
-        columns=[
-            "student_a", "name_a", "file_a", "mtime_a_kst", "size_a_bytes",
-            "student_b", "name_b", "file_b", "mtime_b_kst", "size_b_bytes",
-            "similarity"
-        ]
-    )
+    df_sim = pd.DataFrame( pairs,columns = SIM_COLS )
 
     return pairs, df_sim
+
+
+
+
+def build_similarity_df(pairs: Iterable[Sequence]) -> pd.DataFrame:
+    """
+    Normalize similarity pairs into a DataFrame with a fixed column schema.
+    - pairs: iterable of 11-length sequences (see SIM_COLS order)
+    - returns empty DataFrame with SIM_COLS when pairs is empty
+    """
+    pairs = list(pairs) if pairs is not None else []
+    if not pairs:
+        return pd.DataFrame(columns=SIM_COLS)
+    return pd.DataFrame(pairs, columns=SIM_COLS)

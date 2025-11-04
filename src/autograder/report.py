@@ -2,11 +2,36 @@
 리포팅/통계/로그용 문자열 생성
 """
 
-from typing import Iterable, List
+from typing import Iterable, List, Any, Optional, Set
 import pandas as pd
 from pathlib import Path
 import json
 from collections.abc import Mapping
+from dataclasses import dataclass
+from datetime import date
+
+def load_prev_ids(out_dir: Path) -> Set[str]:
+    """OUT_DIR 내 최신 summary_static_with_name_*.csv에서 student_id 집합을 읽어온다.
+    없거나 읽기 실패하면 빈 집합 반환."""
+    try:
+        files = sorted(
+            Path(out_dir).glob("summary_static_with_name_*.csv"),
+            key=lambda p: p.stat().st_mtime
+        )
+        if not files:
+            return set()
+        df = pd.read_csv(files[-1], dtype=str)
+        if "student_id" not in df.columns:
+            return set()
+        return set(df["student_id"].astype(str))
+    except Exception:
+        return set()
+
+def compute_new_ids(summary_df: pd.DataFrame, prev_ids: Iterable[str]) -> list[str]:
+    """이번 런의 summary_df에서 이전에 없던 student_id만 정렬 리스트로 반환."""
+    prev = set(str(x) for x in prev_ids) if prev_ids else set()
+    curr = set(summary_df["student_id"].astype(str))
+    return sorted(curr - prev)
 
 def build_stats_block(df: pd.DataFrame) -> List[str]:
     if df is None or df.empty:
@@ -211,3 +236,102 @@ def build_run_log_lines(CONFIG: dict, STATS_BLOCK, new_ids=None) -> list[str]:
         lines.append(str(STATS_BLOCK))
 
     return lines
+
+@dataclass
+@dataclass
+class RunConfigInput:
+    # time / run (non-default)
+    now_str: str
+    today_date: date
+    timezone: str
+    run_ts: str
+
+    # paths (non-default)
+    out_dir: Path
+    exec_dir: Path
+    submit_dir: Path
+    template_path: Path
+    answer_path: Path
+    tagged_temp_path: Path
+    tag_audit_path: Path
+    summary_latest: Path
+    similar_latest: Optional[Path]
+    newtoday_latest: Path
+
+    # scoring / thresholds / options (non-default)
+    sim_threshold_template: float
+    sim_threshold_pair: float
+    score_rule: str
+    similarity_enabled: bool
+
+    # label info (non-default)
+    req_labels_count: int
+    opt_labels_count: int
+    req_idx: Iterable[int]
+    opt_idx: Iterable[int]
+    req_map: Mapping[str, Any]
+    opt_map: Mapping[str, Any]
+    excluded_req_all: str
+    excluded_opt_all: str
+
+    # dataset stats (non-default)
+    total_cnt: int
+    new_cnt: int
+    today_cnt: int
+
+    # defaults MUST come last
+    run_log_file: str = "autograde_run.log"
+
+
+def compose_run_config(i: RunConfigInput) -> dict:
+    """Create a normalized CONFIG dict for logs/summary rendering."""
+    return {
+        # ── Run / Time Info ──
+        "TODAY_DATE": i.today_date,
+        "KST_NOW": i.now_str,
+        "TIMEZONE": i.timezone,
+        "RUN_TS": i.run_ts,
+
+        # ── Directories (as str) ──
+        "OUT_DIR": str(i.out_dir),
+        "EXEC_DIR": str(i.exec_dir),
+        "SUBMIT_DIR": str(i.submit_dir),
+
+        # ── File basenames ──
+        "TEMPLATE_FILE": i.template_path.name,
+        "ANSWER_FILE": i.answer_path.name,
+        "TAGGED_TEMP_FILE": i.tagged_temp_path.name,
+        "TAG_AUDIT_FILE": i.tag_audit_path.name,
+        "RUN_LOG_FILE": i.run_log_file,
+        "SUMMARY_FILE_LATEST": i.summary_latest.name,
+        "SIMILAR_FILE_LATEST": (
+            i.similar_latest.name if (i.similar_latest and i.similarity_enabled) else "N/A"
+        ),
+        "NEWTODAY_FILE_LATEST": i.newtoday_latest.name,
+
+        # ── Full paths (as str) ──
+        "TEMPLATE_PATH": str(i.template_path),
+        "ANSWER_PATH": str(i.answer_path),
+        "TAGGED_TEMP_PATH": str(i.tagged_temp_path),
+
+        # ── Scoring / Thresholds / Options ──
+        "SIM_THRESHOLD_TEMPLATE": i.sim_threshold_template,
+        "SIM_THRESHOLD_PAIR": i.sim_threshold_pair,
+        "SCORE_RULE": i.score_rule,
+        "SIMILARITY_ENABLED": i.similarity_enabled,
+
+        # ── Required/Optional cells ──
+        "REQUIRED_CELL_COUNT": i.req_labels_count,
+        "OPTIONAL_CELL_COUNT": i.opt_labels_count,
+        "REQUIRED_CELL_INDEXES": sorted(list(i.req_idx)),
+        "OPTIONAL_CELL_INDEXES": sorted(list(i.opt_idx)),
+        "REQUIRED_CELL_MAP": i.req_map,
+        "OPTIONAL_CELL_MAP": i.opt_map,
+        "EXCLUDED_REQ_ALL": i.excluded_req_all or "없음",
+        "EXCLUDED_OPT_ALL": i.excluded_opt_all or "없음",
+
+        # ── Dataset stats ──
+        "TOTAL_CNT": i.total_cnt,
+        "NEW_CNT": i.new_cnt,
+        "TODAY_CNT": i.today_cnt,
+    }
