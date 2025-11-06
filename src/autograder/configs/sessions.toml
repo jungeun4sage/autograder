@@ -16,15 +16,43 @@
 
 [session_10]
   [session_10.DEV]
-  TEMPLATE_PATH = "/content/drive/MyDrive/DEV/10/template.ipynb"
-  ANSWER_PATH = "/content/drive/MyDrive/DEV/10/ANSWER.ipynb"
-  SUBMIT_DIR    = "/content/drive/MyDrive/DEV/10/submits"
-  OUT_DIR       = "/content/drive/MyDrive/DEV/10/out"
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_10_기술통계분석_학번_성명.ipynb"
+  ANSWER_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_10_기술통계분석_학번_성명_src_v2024.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/10차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/Autograde/10차시"
+
 
   [session_10.PROD]
-  TEMPLATE_PATH = "/content/drive/MyDrive/PROD/10/template.ipynb"
-  ANSWER_PATH = "/content/drive/MyDrive/PROD/10/ANSWER.ipynb"
-  SUBMIT_DIR    = "/content/drive/MyDrive/PROD/10/submits"
-  OUT_DIR       = "/content/drive/MyDrive/PROD/10/out"
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_10_기술통계분석_학번_성명.ipynb"
+  ANSWER_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_10_기술통계분석_학번_성명_src_v2025.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/10차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/Autograde/10차시"
 
-# 11, 12도 같은 형식으로 추가
+[session_11]
+  [session_11.DEV]
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_11_상관분석_학번_성명.ipynb"
+  ANSWER_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_11_상관분석_학번_성명_src_v2024.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/11차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/Autograde/11차시"
+
+
+  [session_11.PROD]
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_11_상관분석_학번_성명.ipynb"
+  ANSWER_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_11_상관분석_학번_성명_src_v2025.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/11차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/Autograde/11차시"
+
+  [session_12]
+  [session_12.DEV]
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_12_회귀분석_학번_성명.ipynb"
+  ANSWER_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR24/MR_12_회귀분석_학번_성명_src_v2024.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/12차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/2024 마케팅조사론/Autograde/12차시"
+
+
+  [session_12.PROD]
+  TEMPLATE_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_12_회귀분석_학번_성명.ipynb"
+  ANSWER_PATH = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/MR_12_회귀분석_학번_성명_src_v2025.ipynb"
+  SUBMIT_DIR    = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/12차시"
+  OUT_DIR       = "/content/drive/MyDrive/Colab Notebooks/52.KHCU_MR25/Autograde/12차시"
+
