@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Iterable, Dict, List, Tuple
 import nbformat
 import pandas as pd
+import re
 
 from .policy import (
     BASE_SCORE,
@@ -15,6 +16,26 @@ from .policy import (
 )
 from .nb_utils import _label_map, _nb_fingerprint, _cell_output_text
 from .io_utils import now_kst, mtime_kst, extract_id_and_name
+
+# summary normalizer for statsmodels (Date/Time line remover)
+# 전역 스위치: 기본 ON, 필요시 False로 바꿔도 됨
+NORMALIZE_DATETIME_DEFAULT = True
+
+_DATE_TIME_PATTERNS = [
+    r"Date:\s+[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}",
+    r"Time:\s*\d{2}:\d{2}:\d{2}",
+]
+_NORMALIZER_RE = re.compile("|".join(_DATE_TIME_PATTERNS),flags=re.MULTILINE)
+
+def _normalize_summary_text(s: str) -> str:
+    if not isinstance(s, str):
+        return s
+    s = _NORMALIZER_RE.sub("", s)
+    return s.strip()
+
+def _maybe_normalize(s: str, enable: bool = NORMALIZE_DATETIME_DEFAULT) -> str:
+    return _normalize_summary_text(s) if enable else s
+
 
 
 def _label_key(x: str) -> List[int]:
@@ -70,6 +91,8 @@ def grade_submissions(
     """
     제출물 전체 채점. (이전 Step5 로직을 함수화)
     """
+
+ 
     rows: List[list] = []
     today_rows_tmp: List[list] = []
     fps: Dict[str, dict] = {}
@@ -149,7 +172,11 @@ def grade_submissions(
             if not executed:
                 req_missing.append(f"#{lab}")
                 continue
-            if not outputs_equal(stu_out, ans_out):
+
+            _stu_cmp = _maybe_normalize(stu_out)
+            _ans_cmp  = _maybe_normalize(ans_out)
+
+            if not outputs_equal(_stu_cmp, _ans_cmp):
                 req_mismatch.append(f"#{lab}")
 
         # 2) 옵션
