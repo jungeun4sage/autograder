@@ -31,6 +31,23 @@ def _nb_fingerprint(nb) -> str:
             if t: chunks.append(t)
     return " ".join(chunks)
 
+def _nb_exec_pattern(nb) -> str:
+    """
+    노트북의 코드 셀 execution_count 시퀀스를 fingerprint로 변환.
+    예: "1 2 3 5 6 4 None 7"
+    """
+    seq = []
+    for c in nb.cells:
+        if c.cell_type == "code":
+            ec = c.get("execution_count", None)
+            # 실행 안 된 셀은 'N' 같은 토큰으로 표시해도 되고, 그냥 건너뛰어도 됨
+            if ec is None:
+                seq.append("N")
+            else:
+                seq.append(str(ec))
+    return " ".join(seq)
+
+
 def _sim(a,b): 
     return SequenceMatcher(None, a or "", b or "").ratio()
 

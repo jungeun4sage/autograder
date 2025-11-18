@@ -14,7 +14,7 @@ from .policy import (
     outputs_equal,
     decide_status_and_match,
 )
-from .nb_utils import _label_map, _nb_fingerprint, _cell_output_text
+from .nb_utils import _label_map, _nb_fingerprint, _cell_output_text, _nb_exec_pattern
 from .io_utils import now_kst, mtime_kst, extract_id_and_name
 
 # summary normalizer for statsmodels (Date/Time line remover)
@@ -96,6 +96,7 @@ def grade_submissions(
     rows: List[list] = []
     today_rows_tmp: List[list] = []
     fps: Dict[str, dict] = {}
+    eps : Dict [str, dict] ={}
     sid2file: Dict[str, str] = {}
     sid2name: Dict[str, str] = {}
     sid2path: Dict[str, Path] = {}
@@ -118,7 +119,7 @@ def grade_submissions(
         try:
             nb = nbformat.read(p, as_version=4)
         except Exception as e:
-            row = [sid, name, p.name, 0.0, "ERROR", "ipynb 파싱 실패", "ERROR", f"노트북 파싱 실패: {e}"]
+            row = [sid, name, p.name, 0.0, "ERROR", "ipynb 파싱 실패", "ERROR", f"노트북 파싱 실패: {e}",0,"",""]
             rows.append(row)
             try:
                 if mtime_kst(p).date() == now_kst().date():
@@ -129,7 +130,8 @@ def grade_submissions(
 
         # 템플릿 유사도(원본/무변경 → 0점)
         fp = _nb_fingerprint(nb)
-        fps[sid], sid2file[sid] = fp, p.name
+        ep = _nb_exec_pattern(nb)
+        fps[sid],eps[sid], sid2file[sid] = fp,ep, p.name
         from_sim_template = False
         try:
             from_sim_template = (template_fingerprint is not None)
@@ -144,7 +146,7 @@ def grade_submissions(
                 row = [
                     sid, name, p.name, 0.0, "ZERO",
                     "템플릿과 거의 동일(원본/무변경)", "ZERO",
-                    "템플릿과 거의 동일하여 0점 처리되었습니다."
+                    "템플릿과 거의 동일하여 0점 처리되었습니다." ,len(fp or""),fp,ep
                 ]
                 rows.append(row)
                 try:
@@ -217,7 +219,7 @@ def grade_submissions(
         )
 
         feedback = ("\n".join(parts) if parts else "정상 제출로 판단되었습니다. 수고했습니다!") + f"\n{score_line}"
-        row = [sid, name, p.name, score, status, reason, output_match, feedback.strip()]
+        row = [sid, name, p.name, score, status, reason, output_match, feedback.strip(), len(fp or ""), fp, ep]
         rows.append(row)
 
         try:
@@ -231,12 +233,13 @@ def grade_submissions(
 
     summary_df = pd.DataFrame(
         rows,
-        columns=["student_id", "student_name", "file", "score", "status", "reasons", "output_match", "feedback"],
+        columns=["student_id", "student_name", "file", "score", "status", "reasons", "output_match", "feedback", "fp_length", "finger_print","exec_pattern"],
     )
 
     return (
         summary_df,
         fps,
+        eps,
         sid2file,
         sid2name,
         sid2path,
