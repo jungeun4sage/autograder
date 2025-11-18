@@ -112,3 +112,32 @@ def _label_key_robust(label_str: str):
         return [int(x) for x in parts] if parts else [999999]
     except Exception:
         return [999999]
+
+# ================================================================
+# @jennie 20251118
+# [Course-Specific Custom Logic / Example Code]
+# 이 코드는 KHCU MR24 11차시 과제(#3.5.2) 전용 커스터마이징 예제입니다.
+# AutoGrader 엔진의 핵심 기능이 아니라, 개별 수업 요구사항에 맞도록
+# 라벨 기반으로 특정 변수 값을 추출하는 '샘플 구현' 용도입니다.
+# 향후 다른 과제/강의에서는 이 패턴을 참고해 수정하여 사용하십시오.
+# ================================================================
+
+def get_more_impact_352(nb, label: str = "3.5.2") -> str:
+    """
+    3.5.2 문제에서 학생이 선택한 more_impact 값을 추출.
+    반환값: "reading" / "math" / ""(없거나 인식 불가)
+    """
+    lmap = _label_map(nb)
+    info = lmap.get(label)
+    if not info:
+        return ""
+
+    cell = info.get("cell")
+    if not cell:
+        return ""
+
+    src = cell.source or ""
+    m = re.search(r'more_impact\s*=\s*"(reading|math)"', src)
+    if m:
+        return m.group(1)
+    return ""

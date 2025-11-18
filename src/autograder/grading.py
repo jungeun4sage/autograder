@@ -100,6 +100,7 @@ def grade_submissions(
     sid2file: Dict[str, str] = {}
     sid2name: Dict[str, str] = {}
     sid2path: Dict[str, Path] = {}
+    sid2_more_impact_352: Dict [str,str] ={}    # @jennie 20251118 label352
     EXCLUDED_REQ_ALL, EXCLUDED_OPT_ALL = set(), set()
 
     # 템플릿/정답/태깅본 제외
@@ -119,7 +120,7 @@ def grade_submissions(
         try:
             nb = nbformat.read(p, as_version=4)
         except Exception as e:
-            row = [sid, name, p.name, 0.0, "ERROR", "ipynb 파싱 실패", "ERROR", f"노트북 파싱 실패: {e}",0,"",""]
+            row = [sid, name, p.name, 0.0, "ERROR", "ipynb 파싱 실패", "ERROR", f"노트북 파싱 실패: {e}",0,"","",""]#@jennie 20251118 label352
             rows.append(row)
             try:
                 if mtime_kst(p).date() == now_kst().date():
@@ -132,6 +133,20 @@ def grade_submissions(
         fp = _nb_fingerprint(nb)
         ep = _nb_exec_pattern(nb)
         fps[sid],eps[sid], sid2file[sid] = fp,ep, p.name
+
+        # ================================================================
+        # [Course-Specific Custom Logic / Example Code]
+        # 이 코드는 KHCU MR24 11차시 과제(#3.5.2) 전용 커스터마이징 예제입니다.
+        # AutoGrader 엔진의 핵심 기능이 아니라, 개별 수업 요구사항에 맞도록
+        # 라벨 기반으로 특정 변수 값을 추출하는 '샘플 구현' 용도입니다.
+        # 향후 다른 과제/강의에서는 이 패턴을 참고해 수정하여 사용하십시오.
+        # @jennie 20251118 label352 (as remark foot print)
+        # ================================================================
+        from .nb_utils import get_more_impact_352
+        lab352 = get_more_impact_352(nb)
+        sid2_more_impact_352[sid] = lab352
+        #---------------
+
         from_sim_template = False
         try:
             from_sim_template = (template_fingerprint is not None)
@@ -146,8 +161,8 @@ def grade_submissions(
                 row = [
                     sid, name, p.name, 0.0, "ZERO",
                     "템플릿과 거의 동일(원본/무변경)", "ZERO",
-                    "템플릿과 거의 동일하여 0점 처리되었습니다." ,len(fp or""),fp,ep
-                ]
+                    "템플릿과 거의 동일하여 0점 처리되었습니다." ,len(fp or""),fp,ep, lab352
+                ]  #@jennie 20251118
                 rows.append(row)
                 try:
                     if mtime_kst(p).date() == now_kst().date():
@@ -219,7 +234,7 @@ def grade_submissions(
         )
 
         feedback = ("\n".join(parts) if parts else "정상 제출로 판단되었습니다. 수고했습니다!") + f"\n{score_line}"
-        row = [sid, name, p.name, score, status, reason, output_match, feedback.strip(), len(fp or ""), fp, ep]
+        row = [sid, name, p.name, score, status, reason, output_match, feedback.strip(), len(fp or ""), fp, ep, lab352] #@jennie 20251118 label352
         rows.append(row)
 
         try:
@@ -233,8 +248,9 @@ def grade_submissions(
 
     summary_df = pd.DataFrame(
         rows,
-        columns=["student_id", "student_name", "file", "score", "status", "reasons", "output_match", "feedback", "fp_length", "finger_print","exec_pattern"],
-    )
+        columns=["student_id", "student_name", "file", "score", "status", "reasons", "output_match", "feedback", 
+                 "fp_length", "finger_print","exec_pattern","lable #3.5.2"],
+    ) #@jennie 20251118 label352
 
     return (
         summary_df,
