@@ -126,6 +126,13 @@ def get_more_impact_352(nb, label: str = "3.5.2") -> str:
     """
     3.5.2 문제에서 학생이 선택한 more_impact 값을 추출.
     반환값: "reading" / "math" / ""(없거나 인식 불가)
+
+    예:
+        more_impact = "reading"
+        more_impact = "reading score"
+        more_impact = "Reading."
+        more_impact = "math score"
+    모두 인식 가능.
     """
     lmap = _label_map(nb)
     info = lmap.get(label)
@@ -137,7 +144,19 @@ def get_more_impact_352(nb, label: str = "3.5.2") -> str:
         return ""
 
     src = cell.source or ""
-    m = re.search(r'more_impact\s*=\s*"(reading|math)"', src)
-    if m:
-        return m.group(1)
+
+    # more_impact = "..." 또는 '...' 형태 전체를 먼저 잡기
+    m = re.search(r'more_impact\s*=\s*["\']([^"\']+)["\']', src, re.IGNORECASE)
+    if not m:
+        return ""
+
+    # 따옴표 안 문자열 전체
+    val = m.group(1).strip().lower()
+
+    # 내용에 reading / math 포함 여부로 판별
+    if "reading" in val:
+        return "reading"
+    if "math" in val:
+        return "math"
+
     return ""
