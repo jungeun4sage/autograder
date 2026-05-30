@@ -157,7 +157,15 @@ def grade_submissions(
             # 템플릿과 유사한 경우 0점 처리
             # (이 조건은 이전 노트북 로직과 동일)
             from .nb_utils import _sim
-            if _sim(fp, template_fingerprint) >= template_sim_threshold:
+
+            # [추가] 학생 노트북에 실행된 코드 셀이 하나라도 있는지 확인 @20260530
+            has_execution = any(
+                bool(c.get("outputs", [])) or (c.get("execution_count") not in (None, 0))
+                for c in nb.cells if c.cell_type == "code"
+            )   
+
+            # [수정] 코드가 같아도 '실행 흔적도 없을 때만' 0점 처리
+            if _sim(fp, template_fingerprint) >= template_sim_threshold and not has_execution:
                 row = [
                     sid, name, p.name, 0.0, "ZERO",
                     "템플릿과 거의 동일(원본/무변경)", "ZERO",
